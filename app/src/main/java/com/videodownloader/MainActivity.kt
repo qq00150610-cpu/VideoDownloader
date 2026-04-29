@@ -43,10 +43,10 @@ import com.videodownloader.player.PlayerActivity
 import com.videodownloader.service.DownloadService
 import com.videodownloader.util.VideoScanner
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.collectAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-import kotlinx.coroutines.flow.collectAsState
         super.onCreate(savedInstanceState)
 
         // Handle share intent
