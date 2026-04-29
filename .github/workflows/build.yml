@@ -21,14 +21,11 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
     
-    - name: Cache Gradle packages
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: gradle-${{ hashFiles('**/*.gradle.kts', '**/gradle-wrapper.properties') }}
-        restore-keys: gradle-
+    - name: Install Gradle 8.5
+      run: |
+        wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip -O /tmp/gradle.zip
+        unzip -q /tmp/gradle.zip -d /opt/
+        echo "/opt/gradle-8.5/bin" >> $GITHUB_PATH
     
     - name: Build Debug APK
       run: gradle assembleDebug
