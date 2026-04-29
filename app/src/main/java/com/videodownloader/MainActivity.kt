@@ -159,6 +159,7 @@ fun DownloadTab(sharedUrl: String?) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val parser = remember { TwitterParser() }
+    val tasks by DownloadService.tasks.collectAsState()
 
     // Permission launcher
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
@@ -404,7 +405,6 @@ fun DownloadTab(sharedUrl: String?) {
             )
         }
 
-        val tasks by DownloadService.tasks.collectAsState()
         if (tasks.isEmpty()) {
             item {
                 Card(
@@ -577,6 +577,7 @@ fun DownloadTaskCard(task: DownloadTask) {
 fun PlayerTab() {
     var onlineUrl by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val videos = remember { VideoScanner.scanDownloadedVideos(context) }
 
     LazyColumn(
         modifier = Modifier
@@ -667,7 +668,6 @@ fun PlayerTab() {
             }
         }
 
-        val videos = remember { VideoScanner.scanDownloadedVideos(context) }
         if (videos.isEmpty()) {
             item {
                 Card(
