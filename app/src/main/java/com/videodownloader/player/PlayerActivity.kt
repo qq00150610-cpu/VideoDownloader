@@ -176,7 +176,7 @@ fun VideoPlayerScreen(
             override fun onIsPlayingChanged(playing: Boolean) {
                 isPlaying = playing
             }
-            override fun onPlaybackStateChanged(state: PlaybackState) {
+            override fun onPlaybackStateChanged(state: Int) {
                 playbackState = state
             }
         }

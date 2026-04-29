@@ -557,7 +557,7 @@ fun DownloadTaskCard(task: DownloadTask) {
             if (task.status == DownloadStatus.DOWNLOADING) {
                 Spacer(modifier = Modifier.height(8.dp))
                 LinearProgressIndicator(
-                    progress = { task.progress / 100f },
+                    progress = task.progress / 100f,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(4.dp)
