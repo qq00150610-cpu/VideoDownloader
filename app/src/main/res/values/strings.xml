@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">视频下载器</string>
+    <string name="tab_download">下载</string>
+    <string name="tab_player">播放器</string>
+    <string name="tab_videos">我的视频</string>
+    <string name="hint_url">粘贴 Twitter/X 视频链接...</string>
+    <string name="btn_download">下载视频</string>
+    <string name="btn_analyze">解析</string>
+    <string name="downloading">下载中...</string>
+    <string name="download_complete">下载完成</string>
+    <string name="download_failed">下载失败</string>
+    <string name="no_videos">暂无下载的视频</string>
+    <string name="play">播放</string>
+    <string name="pause">暂停</string>
+    <string name="next">下一个</string>
+    <string name="previous">上一个</string>
+    <string name="forward_10">快进10秒</string>
+    <string name="rewind_10">快退10秒</string>
+    <string name="select_quality">选择画质</string>
+    <string name="online_video">在线视频</string>
+    <string name="local_video">本地视频</string>
+    <string name="enter_online_url">输入在线视频URL...</string>
+    <string name="btn_play_online">在线播放</string>
+    <string name="storage_permission_needed">需要存储权限来保存视频</string>
+    <string name="notification_permission_needed">需要通知权限来显示下载进度</string>
+</resources>
