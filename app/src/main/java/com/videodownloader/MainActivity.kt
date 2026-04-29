@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+import kotlinx.coroutines.flow.collectAsState
         super.onCreate(savedInstanceState)
 
         // Handle share intent
