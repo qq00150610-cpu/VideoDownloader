@@ -31,13 +31,7 @@ jobs:
         restore-keys: gradle-
     
     - name: Build Debug APK
-      run: |
-        if [ -f "./gradlew" ]; then
-          chmod +x ./gradlew
-          ./gradlew assembleDebug
-        else
-          gradle assembleDebug
-        fi
+      run: gradle assembleDebug
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
