@@ -14,6 +14,9 @@ class VideoDownloaderApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            android.util.Log.e("VideoDownloader", "Uncaught exception on $thread", throwable)
+        }
         createNotificationChannels()
     }
 

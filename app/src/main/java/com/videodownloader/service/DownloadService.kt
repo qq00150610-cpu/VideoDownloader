@@ -6,6 +6,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.videodownloader.MainActivity
@@ -130,8 +131,9 @@ class DownloadService : Service() {
         }
 
         val downloadDir = File(
-            getExternalFilesDir(null)?.parentFile?.parentFile?.parentFile,
-            "Movies/VideoDownloader"
+            getExternalFilesDir(null)?.parentFile?.parentFile?.parentFile
+                ?: Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),
+            "VideoDownloader"
         )
         if (!downloadDir.exists()) downloadDir.mkdirs()
 

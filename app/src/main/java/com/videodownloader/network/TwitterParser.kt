@@ -44,23 +44,52 @@ class TwitterParser {
     /**
      * Parse a Twitter/X URL and extract video download options
      */
+    /**
+     * Check if a URL is a direct video link
+     */
+    fun isDirectVideoUrl(url: String): Boolean {
+        val trimmed = url.trim().lowercase()
+        return trimmed.endsWith(".mp4") || trimmed.endsWith(".m3u8") ||
+               trimmed.endsWith(".webm") || trimmed.endsWith(".mkv") ||
+               trimmed.contains(".mp4?") || trimmed.contains(".m3u8?")
+    }
+
     suspend fun parseUrl(url: String): ParseResult = withContext(Dispatchers.IO) {
         try {
-            if (!isValidTwitterUrl(url)) {
-                return@withContext ParseResult(error = "无效的 Twitter/X 链接格式")
-            }
-
             val cleanUrl = url.trim()
 
-            // Try the API endpoint first
-            val apiResult = tryApiParse(cleanUrl)
-            if (apiResult != null) return@withContext apiResult
+            if (cleanUrl.isBlank()) {
+                return@withContext ParseResult(error = "请输入链接")
+            }
 
-            // Fallback: scrape the page
-            val scrapeResult = tryScrapeParse(cleanUrl)
-            if (scrapeResult != null) return@withContext scrapeResult
+            // Direct video URL - no parsing needed
+            if (isDirectVideoUrl(cleanUrl)) {
+                return@withContext ParseResult(
+                    title = "在线视频",
+                    qualities = listOf(
+                        VideoQuality(
+                            url = cleanUrl,
+                            quality = "原画",
+                            format = if (cleanUrl.contains(".m3u8")) "m3u8" else "mp4"
+                        )
+                    )
+                )
+            }
 
-            ParseResult(error = "无法解析该链接，请确认链接有效且视频公开可用")
+            // Twitter/X URL
+            if (isValidTwitterUrl(cleanUrl)) {
+                // Try the API endpoint first
+                val apiResult = tryApiParse(cleanUrl)
+                if (apiResult != null) return@withContext apiResult
+
+                // Fallback: scrape the page
+                val scrapeResult = tryScrapeParse(cleanUrl)
+                if (scrapeResult != null) return@withContext scrapeResult
+
+                return@withContext ParseResult(error = "无法解析该链接，请确认视频公开可用")
+            }
+
+            ParseResult(error = "仅支持 Twitter/X 视频链接或直链视频地址")
         } catch (e: Exception) {
             ParseResult(error = "解析失败: ${e.message}")
         }
@@ -89,7 +118,7 @@ class TwitterParser {
             } else {
                 null
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             null
         }
     }
@@ -155,7 +184,7 @@ class TwitterParser {
 
             if (qualities.isEmpty()) return null
             ParseResult(qualities = qualities)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             null
         }
     }
@@ -182,7 +211,7 @@ class TwitterParser {
             } else {
                 null
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             null
         }
     }
@@ -210,7 +239,7 @@ class TwitterParser {
             } else {
                 null
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             null
         }
     }

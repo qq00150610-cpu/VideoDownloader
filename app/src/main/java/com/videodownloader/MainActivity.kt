@@ -233,8 +233,13 @@ fun DownloadTab(sharedUrl: String?) {
                             isParsing = true
                             parseResult = null
                             scope.launch {
-                                parseResult = parser.parseUrl(url)
-                                isParsing = false
+                                try {
+                                    parseResult = parser.parseUrl(url)
+                                } catch (e: Exception) {
+                                    parseResult = ParseResult(error = "解析出错: \${e.message}")
+                                } finally {
+                                    isParsing = false
+                                }
                             }
                         },
                         modifier = Modifier
