@@ -51,3 +51,14 @@ data class DownloadTask(
 enum class DownloadStatus {
     PENDING, DOWNLOADING, COMPLETED, FAILED, CANCELLED
 }
+
+/**
+ * Playback history record
+ */
+data class PlaybackHistory(
+    val id: String,
+    val title: String,
+    val uri: String,
+    val timestamp: Long = System.currentTimeMillis(),
+    val duration: Long = 0
+)

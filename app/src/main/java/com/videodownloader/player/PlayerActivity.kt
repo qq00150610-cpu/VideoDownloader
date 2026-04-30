@@ -45,6 +45,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import com.videodownloader.data.LocalVideo
+import com.videodownloader.util.PlaybackHistoryManager
 import com.videodownloader.util.VideoScanner
 import kotlinx.coroutines.delay
 
@@ -106,6 +107,13 @@ class PlayerActivity : ComponentActivity() {
             prepare()
             playWhenReady = true
         }
+
+        // Save playback history
+        PlaybackHistoryManager.addHistory(
+            this@PlayerActivity,
+            videoTitle.ifBlank { "视频" },
+            videoUri.ifBlank { videoList?.getOrNull(position) ?: "" }
+        )
 
         mediaSession = MediaSession.Builder(this, exoPlayer!!).build()
 

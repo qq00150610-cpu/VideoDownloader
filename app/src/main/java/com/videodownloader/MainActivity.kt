@@ -41,6 +41,8 @@ import com.videodownloader.data.*
 import com.videodownloader.network.TwitterParser
 import com.videodownloader.player.PlayerActivity
 import com.videodownloader.service.DownloadService
+import com.videodownloader.data.PlaybackHistory
+import com.videodownloader.util.PlaybackHistoryManager
 import com.videodownloader.util.VideoScanner
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.collectAsState
@@ -578,6 +580,7 @@ fun PlayerTab() {
     var onlineUrl by remember { mutableStateOf("") }
     val context = LocalContext.current
     val videos = remember { VideoScanner.scanDownloadedVideos(context) }
+    var historyList by remember { mutableStateOf(PlaybackHistoryManager.getHistory(context)) }
 
     LazyColumn(
         modifier = Modifier
@@ -649,6 +652,81 @@ fun PlayerTab() {
             }
         }
 
+        // Playback History
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    Icons.Default.History,
+                    contentDescription = null,
+                    tint = Color(0xFFBB86FC)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    "播放记录",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+                if (historyList.isNotEmpty()) {
+                    TextButton(onClick = {
+                        PlaybackHistoryManager.clearHistory(context)
+                        historyList = emptyList()
+                    }) {
+                        Text(
+                            "清空",
+                            color = Color(0xFFCF6679),
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+        }
+
+        if (historyList.isEmpty()) {
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                Icons.Default.History,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(40.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text("暂无播放记录", color = Color.Gray, fontSize = 14.sp)
+                        }
+                    }
+                }
+            }
+        } else {
+            items(historyList) { history ->
+                PlaybackHistoryItem(
+                    history = history,
+                    onClick = {
+                        PlayerActivity.start(context, history.uri, history.title)
+                    },
+                    onDelete = {
+                        PlaybackHistoryManager.removeHistory(context, history.id)
+                        historyList = PlaybackHistoryManager.getHistory(context)
+                    }
+                )
+            }
+        }
+
         // Quick access: downloaded videos
         item {
             Spacer(modifier = Modifier.height(8.dp))
@@ -705,6 +783,69 @@ fun PlayerTab() {
                     onClick = {
                         PlayerActivity.startPlaylist(context, videos, index)
                     }
+                )
+            }
+        }
+    }
+}
+
+// ============ PLAYBACK HISTORY ITEM ============
+
+@Composable
+fun PlaybackHistoryItem(
+    history: PlaybackHistory,
+    onClick: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Icon(
+                Icons.Default.PlayCircle,
+                contentDescription = null,
+                tint = Color(0xFFBB86FC),
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = history.title,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = PlaybackHistoryManager.formatRelativeTime(history.timestamp),
+                        color = Color.Gray,
+                        fontSize = 12.sp
+                    )
+                    if (history.duration > 0) {
+                        Text(
+                            text = " · ${VideoScanner.formatDuration(history.duration)}",
+                            color = Color.Gray,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
+            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "删除",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
